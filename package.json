@@ -1,8 +1,8 @@
 {
-  "name": "datamapperjs",
-  "version": "1.0.0",
+  "name": "data-import-mapper",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive -u exports --reporter=min",
     "test:watch": "mocha --watch --recursive -u exports --reporter=min"
