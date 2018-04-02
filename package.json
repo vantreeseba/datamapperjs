@@ -1,16 +1,34 @@
 {
   "name": "data-import-mapper",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.1",
+  "description": "A utility to map json data from one format to another.",
   "main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive -u exports --reporter=min",
     "test:watch": "mocha --watch --recursive -u exports --reporter=min"
   },
-  "author": "",
+  "author": "vantreeseba@gmail.com",
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^5.0.5"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vantreeseba/datamapperjs.git"
+  },
+  "keywords": [
+    "Data",
+    "Map",
+    "Mapper",
+    "Import"
+  ],
+  "bugs": {
+    "url": "https://github.com/vantreeseba/datamapperjs/issues"
+  },
+  "homepage": "https://github.com/vantreeseba/datamapperjs#readme"
 }
