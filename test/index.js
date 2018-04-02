@@ -88,6 +88,37 @@ const test = {
         const mapped = mapper.map(original);
         assert.deepEqual({b:2}, mapped);
       },
+      'Should return mapped object with object with nested result and function': () => {
+        const original = {a : {b: 1}};
+        const config = {
+          b: {
+            b: {
+              from: 'a.b',
+              map: (val) => val + 1
+            }
+          }
+        };
+        const mapper = new Mapper(config);
+
+        const mapped = mapper.map(original);
+        assert.deepEqual({b: {b: 2}}, mapped);
+      },
+      'Should return mapped object with object with very nested result and function': () => {
+        const original = {a : {b: 1}};
+        const config = {
+          a: {b: {c: {d : {
+            e: {
+              from: 'a.b',
+              map: (val) => val + 1
+            }
+          }
+          }}}
+        };
+        const mapper = new Mapper(config);
+
+        const mapped = mapper.map(original);
+        assert.deepEqual({a: {b:{c:{d:{e:2}}}}}, mapped);
+      },
 
     },
   },
