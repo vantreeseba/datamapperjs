@@ -1,6 +1,6 @@
 {
   "name": "data-import-mapper",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "A utility to map json data from one format to another.",
   "main": "src/index.js",
   "scripts": {
