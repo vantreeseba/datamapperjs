@@ -8,6 +8,7 @@ class Mapper {
     let value = obj;
     let current;
 
+
     const parts = path.split('.');
     while(current = parts.shift()) {
       value = value[current];
@@ -16,7 +17,7 @@ class Mapper {
     return value;
   }
 
-  parseField(field, key, obj) {
+  async parseField(field, key, obj) {
     const mapType = typeof field;
 
     const map = mapType === 'string' ? (val) => val
@@ -29,27 +30,31 @@ class Mapper {
         : mapType === 'object' ? field.from
           : undefined;
 
-    return map(this.getValueFromPath(path, obj));
-
+    return await map(this.getValueFromPath(path, obj));
   }
 
-  parseObject(config, obj) {
+  async parseObject(config, obj) {
     const newObj = {};
 
-    Object.keys(config).forEach(key => {
+    const keys = Object.keys(config).map(async key => {
       const field = config[key];
       const mapType = typeof field;
 
-      newObj[key] = mapType === 'object' && !field.key && !field.map
+      newObj[key] = await (mapType === 'object' && !field.key && !field.map
         ? this.parseObject(field, obj)
-        : this.parseField(field, key, obj);
+        : this.parseField(field, key, obj));
     });
+
+    await Promise.all(keys); 
     return newObj;
   }
 
   // Return built mapper.
-  map(objectToMap) {
-    return this.parseObject(this.config, objectToMap);
+  async map(objectToMap) {
+    if(objectToMap instanceof Array) {
+      return Promise.all(objectToMap.map(obj => this.parseObject(this.config, obj)));
+    }
+    return await this.parseObject(this.config, objectToMap);
   }
 }
 

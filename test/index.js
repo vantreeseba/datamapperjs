@@ -4,35 +4,35 @@ const Mapper = require('../src/index');
 const test = {
   mapper: {
     mapper: {
-      'Should return the mapped object': () => {
+      'Should return the mapped object': async () => {
         const original = {a:1};
         const mapper = new Mapper({a: 'a'});
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual(original, mapped);
       },
-      'Should return mapped object from config': () => {
+      'Should return mapped object from config': async () => {
         const original = {a:1};
         const mapper = new Mapper({b:'a'});
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:1}, mapped);
       },
-      'Should return mapped object from config with path': () => {
+      'Should return mapped object from config with path': async () => {
         const original = {a:1};
         const mapper = new Mapper({b:'a'});
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:1}, mapped);
       },
-      'Should return mapped object from config with function': () => {
+      'Should return mapped object from config with function': async () => {
         const original = {a:1};
         const mapper = new Mapper({a:(val) => val + 1});
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({a:2}, mapped);
       },
-      'Should return mapped object from config with function and name': () => {
+      'Should return mapped object from config with function and name': async () => {
         const original = {a:1};
         const config = {
           b: {
@@ -42,40 +42,40 @@ const test = {
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:2}, mapped);
       },
-      'Should return mapped object with array': () => {
+      'Should return mapped object with array': async () => {
         const original = {a : [1, 2, 3]};
         const config = {
           b: 'a'
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:[1, 2, 3]}, mapped);
       },
-      'Should return mapped object with object': () => {
+      'Should return mapped object with object': async () => {
         const original = {a : {b: 1}};
         const config = {
           b: 'a'
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:{b:1}}, mapped);
       },
-      'Should return mapped object with object with nested path': () => {
+      'Should return mapped object with object with nested path': async () => {
         const original = {a : {b: 1}};
         const config = {
           b: 'a.b'
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:1}, mapped);
       },
-      'Should return mapped object with object with nested path and function': () => {
+      'Should return mapped object with object with nested path and function': async () => {
         const original = {a : {b: 1}};
         const config = {
           b: {
@@ -85,10 +85,10 @@ const test = {
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b:2}, mapped);
       },
-      'Should return mapped object with object with nested result and function': () => {
+      'Should return mapped object with object with nested result and function': async () => {
         const original = {a : {b: 1}};
         const config = {
           b: {
@@ -100,10 +100,10 @@ const test = {
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({b: {b: 2}}, mapped);
       },
-      'Should return mapped object with object with very nested result and function': () => {
+      'Should return mapped object with object with very nested result and function': async () => {
         const original = {a : {b: 1}};
         const config = {
           a: {b: {c: {d : {
@@ -116,7 +116,7 @@ const test = {
         };
         const mapper = new Mapper(config);
 
-        const mapped = mapper.map(original);
+        const mapped = await mapper.map(original);
         assert.deepEqual({a: {b:{c:{d:{e:2}}}}}, mapped);
       },
 
