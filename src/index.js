@@ -8,11 +8,11 @@ class Mapper {
     let value = obj;
     let current;
 
-
     const parts = path.split('.');
     while(current = parts.shift()) {
       value = value[current];
     }
+
 
     return value;
   }
@@ -30,19 +30,40 @@ class Mapper {
         : mapType === 'object' ? field.from
           : undefined;
 
-    return await map(this.getValueFromPath(path, obj));
+    const value = this.getValueFromPath(path, obj);
+    if(value instanceof Array) {
+      return await Promise.all(value.map(v => {
+        if(typeof v === 'object') {
+          return this.parseObject(field, v)
+        }
+        return v;
+      }));
+    }
+    return await map(value);
   }
 
   async parseObject(config, obj) {
-    const newObj = {};
+    let newObj = {};
 
     const keys = Object.keys(config).map(async key => {
-      const field = config[key];
-      const mapType = typeof field;
+      let field = config[key];
+      let mapType = typeof field;
 
-      newObj[key] = await (mapType === 'object' && !field.key && !field.map
+      if(field instanceof Array) {
+        let fieldName = Object.keys(field)[0];
+        field = field[0];
+        mapType = typeof field;
+
+        newObj = await Promise.all(obj[key].map(v => this.parseObject(field, v)));
+        return;
+      }
+
+      let value = await (mapType === 'object' && !field.key && !field.map 
         ? this.parseObject(field, obj)
         : this.parseField(field, key, obj));
+      if(value !== undefined) {
+        newObj[key] = value; 
+      }
     });
 
     await Promise.all(keys); 

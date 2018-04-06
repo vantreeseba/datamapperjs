@@ -53,8 +53,53 @@ const test = {
         const mapper = new Mapper(config);
 
         const mapped = await mapper.map(original);
+
         assert.deepEqual({b:[1, 2, 3]}, mapped);
       },
+      'Should return mapped object with array of objects ': async () => {
+        const original = {a : [{name: 'a'}, {name: 'b'}]};
+        const config = {
+          b: {a: [{name: 'name'}]}
+        };
+        const mapper = new Mapper(config);
+
+        const mapped = await mapper.map(original);
+        assert.deepEqual({b:[{name:'a'},{name:'b'}]}, mapped);
+      },
+      'Should return mapped object with array in nested objects ': async () => {
+        const original = {a : [
+          {name: 'a', bar: [1,2,3]}, 
+          {name: 'b', bar: [1,2,3]}
+        ]};
+        const config = {
+          b: {a: [{name: 'name', baz: 'bar'}]}
+        };
+        const mapper = new Mapper(config);
+
+        const mapped = await mapper.map(original);
+        assert.deepEqual({b:[
+          {name: 'a', baz: [1,2,3]}, 
+          {name: 'b', baz: [1,2,3]}
+        ]}, mapped);
+      },
+      'Should return mapped object with nested array of objects ': async () => {
+        const original = {a : [
+          {name: 'a', bar: [{add:"foo", other: 1}]}, 
+          {name: 'b', bar: [{add:"bar"}]}
+        ]};
+        const config = {
+          b: {a: [{name: 'name', baz: {bar: [{sub: 'add', other:'other'}]}}]}
+        };
+        const mapper = new Mapper(config);
+
+        const mapped = await mapper.map(original);
+
+        assert.deepEqual({b:[
+          {name: 'a', baz: [{sub:"foo", other: 1}]}, 
+          {name: 'b', baz: [{sub:"bar"}]}
+        ]}, mapped);
+      },
+
       'Should return mapped object with object': async () => {
         const original = {a : {b: 1}};
         const config = {
