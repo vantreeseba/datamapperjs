@@ -82,6 +82,9 @@ class Mapper {
 
   // Return built mapper.
   async map(objectToMap) {
+    if(!objectToMap) {
+      return {};
+    }
     if(objectToMap instanceof Array) {
       return Promise.all(objectToMap.map(obj => this.parseObject(this.config, obj)));
     }
