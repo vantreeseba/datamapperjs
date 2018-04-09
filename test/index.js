@@ -84,21 +84,97 @@ const test = {
       },
       'Should return mapped object with nested array of objects ': async () => {
         const original = {a : [
-          {name: 'a', bar: [{add:"foo", other: 1}]}, 
-          {name: 'b', bar: [{add:"bar"}]}
+          {name: 'a', bar: [{add:"foo", other: 1, c: {d:1}}]}, 
+          {name: 'b', bar: [{add:"bar", d:{e:1}}]}
         ]};
         const config = {
-          b: {a: [{name: 'name', baz: {bar: [{sub: 'add', other:'other'}]}}]}
+          b: {
+            a: [{
+              name: 'name', 
+              baz: {
+                bar: [{
+                  sub: 'add',
+                  other:'other',
+                  c: 'c',
+                  d: {
+                    e: 'e'
+                  } 
+                }]
+              }
+            }]
+          }
         };
         const mapper = new Mapper(config);
 
         const mapped = await mapper.map(original);
 
         assert.deepEqual({b:[
-          {name: 'a', baz: [{sub:"foo", other: 1}]}, 
-          {name: 'b', baz: [{sub:"bar"}]}
+          {name: 'a', baz: [{sub:"foo", other: 1, c: {d:1}, d:{}}]}, 
+          {name: 'b', baz: [{sub:"bar", d:{e:1}}]}
         ]}, mapped);
       },
+      'Should map simple array with nested object' : async () => {
+        const original = {
+          a: [{
+            b:{
+              c:1
+            }
+            }]
+        };
+        const config = {
+          a: 'a'
+        };
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+        
+        assert.deepEqual(original, mapped);
+      },
+      'Should map simple array with nested object with nested config' : async () => {
+        const original = {
+          a: [{
+            b:{
+              c:1
+            }
+            }]
+        };
+        const config = {
+          a: {
+            a: [{
+              b: 'b'
+            }]
+          } 
+        };
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+        
+        assert.deepEqual(original, mapped);
+      },
+      'Should map simple array with nested object with double nested config' : async () => {
+        const original = {
+          a: [{
+            b:{
+              c:1
+            }
+            }]
+        };
+        const config = {
+          a: {
+            a: [{
+              b: {
+                c: 'c'
+              } 
+            }]
+          } 
+        };
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+        
+        assert.deepEqual(original, mapped);
+      },
+
 
       'Should return mapped object with object': async () => {
         const original = {a : {b: 1}};
@@ -149,11 +225,11 @@ const test = {
         assert.deepEqual({b: {b: 2}}, mapped);
       },
       'Should return mapped object with object with very nested result and function': async () => {
-        const original = {a : {b: 1}};
+        const original = {x : {y: 1}};
         const config = {
           a: {b: {c: {d : {
             e: {
-              from: 'a.b',
+              from: 'x.y',
               map: (val) => val + 1
             }
           }

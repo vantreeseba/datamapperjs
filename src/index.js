@@ -13,7 +13,6 @@ class Mapper {
       value = value[current];
     }
 
-
     return value;
   }
 
@@ -23,15 +22,16 @@ class Mapper {
     const map = mapType === 'string' ? (val) => val
       : mapType === 'function' ? field
         : mapType === 'object' && field.map ? field.map
-          : () => undefined;
+          : (val) => val;
 
     const path = mapType === 'string' ? field
       : mapType === 'function' ? key
         : mapType === 'object' ? field.from
-          : undefined;
+          : key;
 
     const value = this.getValueFromPath(path, obj);
-    if(value instanceof Array) {
+
+    if(value instanceof Array && mapType === 'object') {
       return await Promise.all(value.map(v => {
         if(typeof v === 'object') {
           return this.parseObject(field, v)
@@ -42,25 +42,35 @@ class Mapper {
     return await map(value);
   }
 
+  async parseArray(field, key, obj) {
+    let fieldName = Object.keys(field)[0];
+    field = field[0];
+
+    return Promise.all(obj[key].map(v => {
+      return this.parseObject(field, v)
+    }));
+  }
+
+  parseValue(field, key, obj) {
+    let mapType = typeof field;
+    let isNestedConfig = mapType === 'object' && !field.key && !field.map;
+
+    return isNestedConfig 
+        ? this.parseObject(field, !field[key] && obj[key] || obj)
+        : this.parseField(field, key, obj);
+  }
+
   async parseObject(config, obj) {
     let newObj = {};
 
     const keys = Object.keys(config).map(async key => {
       let field = config[key];
-      let mapType = typeof field;
 
       if(field instanceof Array) {
-        let fieldName = Object.keys(field)[0];
-        field = field[0];
-        mapType = typeof field;
+        return newObj = await this.parseArray(field, key, obj);
+      } 
 
-        newObj = await Promise.all(obj[key].map(v => this.parseObject(field, v)));
-        return;
-      }
-
-      let value = await (mapType === 'object' && !field.key && !field.map 
-        ? this.parseObject(field, obj)
-        : this.parseField(field, key, obj));
+      let value = await this.parseValue(field, key, obj);
       if(value !== undefined) {
         newObj[key] = value; 
       }
