@@ -56,6 +56,17 @@ const test = {
 
         assert.deepEqual({b:[1, 2, 3]}, mapped);
       },
+      // 'Should return mapped object with array with no name': async () => {
+      //   const original = {a : [{b:1}]};
+      //   const config = {
+      //     a: [{c:'b'}] 
+      //   };
+      //   const mapper = new Mapper(config);
+
+      //   const mapped = await mapper.map(original);
+
+      //   assert.deepEqual({a:[{c:1}]}, mapped);
+      // },
       'Should return mapped object with array of objects ': async () => {
         const original = {a : [{name: 'a'}, {name: 'b'}]};
         const config = {

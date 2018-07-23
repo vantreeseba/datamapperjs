@@ -3,6 +3,7 @@
   "version": "0.4.3",
   "description": "A utility to map json data from one format to another.",
   "main": "src/index.js",
+  "module": "src/index.js",
   "scripts": {
     "test": "mocha --recursive -u exports --reporter=min",
     "test:watch": "mocha --watch --recursive -u exports --reporter=min"
