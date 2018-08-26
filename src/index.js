@@ -32,11 +32,11 @@ class Mapper {
     const value = this.getValueFromPath(path, obj);
 
     if(value instanceof Array && mapType === 'object') {
-      return await Promise.all(value.map(v => {
+      return await Promise.all(value.map(async v => {
         if(typeof v === 'object') {
           return this.parseObject(field, v)
         }
-        return v;
+        return await map(v);
       }));
     }
     return await map(value);
