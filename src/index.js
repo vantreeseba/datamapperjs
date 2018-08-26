@@ -33,7 +33,7 @@ class Mapper {
 
     if(value instanceof Array && mapType === 'object') {
       return await Promise.all(value.map(async v => {
-        if(typeof v === 'object') {
+        if(typeof v === 'object' && !field.from) {
           return this.parseObject(field, v)
         }
         return await map(v);
