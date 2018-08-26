@@ -97,6 +97,23 @@ const test = {
 
         assert.deepEqual(expected, mapped);
       },
+      'should return array mapped per object in array and filter out nulls': async () => {
+        const original = {a:[{c:1},{c:2},{c:3}]};
+        const config = {
+          b: {
+            from: 'a',
+            map: v => {v.c += 1; return v.c < 3 ? v : undefined;}
+          }
+        };
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+        const expected = {b:[{c:2}]};
+
+        assert.deepEqual(mapped, expected);
+      },
+ 
+
  
       'Should return mapped object with array of objects ': async () => {
         const original = {a : [{name: 'a'}, {name: 'b'}]};

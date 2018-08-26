@@ -32,12 +32,12 @@ class Mapper {
     const value = this.getValueFromPath(path, obj);
 
     if(value instanceof Array && mapType === 'object') {
-      return await Promise.all(value.map(async v => {
+      return (await Promise.all(value.map(async v => {
         if(typeof v === 'object' && !field.from) {
           return this.parseObject(field, v)
         }
         return await map(v);
-      }));
+      }))).filter(x => x !== undefined);
     }
     return await map(value);
   }
@@ -47,7 +47,7 @@ class Mapper {
     field = field[0];
 
     return Promise.all(obj[key].map(v => {
-      return this.parseObject(field, v)
+      return this.parseObject(field, v);
     }));
   }
 
