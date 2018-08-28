@@ -21,23 +21,29 @@ class Mapper {
 
     const map = mapType === 'string' ? (val) => val
       : mapType === 'function' ? field
-        : mapType === 'object' && field.map ? field.map
-          : (val) => val;
+      : mapType === 'object' && field.reduce ? field.reduce
+      : mapType === 'object' && field.map ? field.map
+      : (val) => val;
 
     const path = mapType === 'string' ? field
       : mapType === 'function' ? key
-        : mapType === 'object' ? field.from
-          : key;
+      : mapType === 'object' ? field.from
+      : key;
 
     const value = this.getValueFromPath(path, obj);
 
     if(value instanceof Array && mapType === 'object') {
+      if(field.reduce) {
+        return map(value);
+      }
+
       return (await Promise.all(value.map(async v => {
         if(typeof v === 'object' && !field.from) {
           return this.parseObject(field, v)
         }
         return await map(v);
       }))).filter(x => x !== undefined);
+
     }
     return await map(value);
   }
@@ -53,7 +59,7 @@ class Mapper {
 
   parseValue(field, key, obj) {
     let mapType = typeof field;
-    let isNestedConfig = mapType === 'object' && !field.key && !field.map;
+    let isNestedConfig = mapType === 'object' && !field.key && !field.map && !field.reduce;
 
     return isNestedConfig 
         ? this.parseObject(field, !field[key] && obj[key] || obj)

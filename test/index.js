@@ -65,8 +65,23 @@ const test = {
 
       //   const mapped = await mapper.map(original);
 
-      //   assert.deepEqual({a:[{c:1}]}, mapped);
+      //   assert.deepEqual(mapped, {a:[{c:1}]});
       // },
+      'should return array mapped': async () => {
+        const original = {a:[{val:1, key: 'foo'}, {val:2, key: 'bar'}]};
+        const config = {
+          b: {
+            from: 'a',
+            reduce: (arr) => arr.reduce((sum, v) => {sum[v.key] = v.val; return sum; }, {})
+          }
+        };
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+        const expected = {b:{bar:2, foo:1}};
+
+        assert.deepEqual(expected, mapped);
+      },
       'should return array mapped per value in array': async () => {
         const original = {a:[1,2,3]};
         const config = {
@@ -112,9 +127,6 @@ const test = {
 
         assert.deepEqual(mapped, expected);
       },
- 
-
- 
       'Should return mapped object with array of objects ': async () => {
         const original = {a : [{name: 'a'}, {name: 'b'}]};
         const config = {
@@ -233,8 +245,6 @@ const test = {
         
         assert.deepEqual(original, mapped);
       },
-
-
       'Should return mapped object with object': async () => {
         const original = {a : {b: 1}};
         const config = {
@@ -299,7 +309,6 @@ const test = {
         const mapped = await mapper.map(original);
         assert.deepEqual({a: {b:{c:{d:{e:2}}}}}, mapped);
       },
-
     },
   },
 };
