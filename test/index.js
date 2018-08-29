@@ -245,6 +245,30 @@ const test = {
         
         assert.deepEqual(original, mapped);
       },
+      'should map array from root to prop on mapped array': async () => {
+        const original = {
+          a: [1,2,3],
+          b: [{foo:1}]
+        };
+
+        const config = {
+          b: {
+            b:[{
+              foo: 'foo',
+              baz: 'a'
+            }]
+          }
+        };
+
+        const expected = {
+          b: [{foo:1, baz: [1,2,3]}]
+        }
+
+        const mapper = new Mapper(config);
+        const mapped = await mapper.map(original);
+
+        assert.deepEqual(mapped, expected);
+      },
       'Should return mapped object with object': async () => {
         const original = {a : {b: 1}};
         const config = {

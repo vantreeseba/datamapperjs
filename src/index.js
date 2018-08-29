@@ -39,7 +39,7 @@ class Mapper {
 
       return (await Promise.all(value.map(async v => {
         if(typeof v === 'object' && !field.from) {
-          return this.parseObject(field, v)
+          return this.parseObject(field, v, obj)
         }
         return await map(v);
       }))).filter(x => x !== undefined);
@@ -53,7 +53,7 @@ class Mapper {
     field = field[0];
 
     return Promise.all(obj[key].map(v => {
-      return this.parseObject(field, v);
+      return this.parseObject(field, v, obj);
     }));
   }
 
@@ -61,12 +61,14 @@ class Mapper {
     let mapType = typeof field;
     let isNestedConfig = mapType === 'object' && !field.key && !field.map && !field.reduce;
 
+    const subObj = !field[key] && obj[key] || obj;
+
     return isNestedConfig 
-        ? this.parseObject(field, !field[key] && obj[key] || obj)
+        ? this.parseObject(field, subObj, obj)
         : this.parseField(field, key, obj);
   }
 
-  async parseObject(config, obj) {
+  async parseObject(config, obj, root) {
     let newObj = {};
 
     const keys = Object.keys(config).map(async key => {
@@ -79,6 +81,11 @@ class Mapper {
       let value = await this.parseValue(field, key, obj);
       if(value !== undefined) {
         newObj[key] = value; 
+      } else {
+        value = await this.parseValue(field, key, root);
+        if(value !== undefined) {
+          newObj[key] = value; 
+        }
       }
     });
 
@@ -92,9 +99,9 @@ class Mapper {
       return {};
     }
     if(objectToMap instanceof Array) {
-      return Promise.all(objectToMap.map(obj => this.parseObject(this.config, obj)));
+      return Promise.all(objectToMap.map(obj => this.parseObject(this.config, obj, obj)));
     }
-    return await this.parseObject(this.config, objectToMap);
+    return await this.parseObject(this.config, objectToMap, objectToMap);
   }
 }
 
